@@ -209,16 +209,16 @@ elseif im_vid == 1
     while cs ~= 1 && cs ~= 2
     cs = input('Select the colorspace to perform the manipulations    [1=HSV, 2=CIELab]: ');
         if isempty(cs) == 1
-            disp(quitmsg);
-            return
+            cs = 2;
+            disp('CIELab as default')
         end
     end
     
     while y_n_plot ~= 1 && y_n_plot ~= 2
     y_n_plot = input('Do you want diagnostic plots? (may take some time)    [1=yes, 2=no]: ');
         if isempty(y_n_plot) == 1
-            disp(quitmsg);
-            return
+            y_n_plot = 2;
+            disp('not showing diagnostics is default')
         end
     end
     
@@ -258,7 +258,7 @@ optim = 0;        % 0 = no SSIM optimization
                   % size (default = 67), see histMatch.m)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-temp = 0; md = 0; wim = 0; backg = 0;
+temp = 0; md = 0; wim = 0; backg = 0; lum = 0;
 
 while temp ~= 1 && temp ~= 2
     temp = input('SHINE_color options    [1=default, 2=custom]: ');
@@ -286,13 +286,21 @@ if temp == 2
                 disp(quitmsg)
                 return;
             end
+            
+            if md == 1
+                lum = input('Desired mean & std (e.g. [128 32]): ');
+                if isempty(lum) == 1 
+                    lum = 0;
+                end
+            end
+
             if md == 2
                 while optim ~= 2 && optim ~= 3
                 optim = 1+input('Optimize SSIM    [1=no, 2=yes]: ');
                 if isempty(optim) == 1 
                     disp(quitmsg)
                     return;
-                end 
+                end
                 end
             end
         end
@@ -512,7 +520,16 @@ for iteration = 1:it
     switch mode
         case 1
             if wholeIm == 1
-                images = lumMatch(images);
+                % If lum is given, perform lumMatch with given mean & std
+                if lum ~= 0
+                    disp('lumMatch with given mean & std')
+                    mask_ = ones(size(channel1{1}));
+                    images = lumMatch(images, mask_, lum);
+                else
+                    disp('lumMatch with default params')
+                    images = lumMatch(images);
+                end
+                
             else
                 images = lumMatch(images,mask_fgr);
                 images = lumMatch(images,mask_bgr);
@@ -520,7 +537,11 @@ for iteration = 1:it
             disp('Progress: lumMatch successful')
         case {2, 5, 6}
             if wholeIm == 1
-                images = histMatch(images,optim);
+                %images = histMatch(images,optim);
+                % Use custom reference histogram
+                disp('Using custom reference histogram from \"avghist_isoscene.mat\"')
+                load("avghist_isoscene_mancorr.mat", "avghist")
+                images = histMatch(images,optim,avghist);
             else
                 images = histMatch(images,optim,[],mask_fgr);
                 images = histMatch(images,optim,[],mask_bgr);
