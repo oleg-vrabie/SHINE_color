@@ -152,8 +152,8 @@ while im_vid ~= 1 && im_vid ~= 2
     prompt = 'Input     [1=images, 2=video]: ';
     im_vid = input(prompt);
     if isempty(im_vid) == 1 % RDB force a choice
-        disp(quitmsg)
-        return;
+        im_vid = 1;
+            disp('images are default');
     end 
 end
 
@@ -202,8 +202,8 @@ elseif im_vid == 1
     prompt = 'Type the image format  [e.g., jpg, png]: ';
     imformat = input(prompt,'s');
     if isempty(imformat)
-      imformat = 'jpg';
-      disp('jpg as default');
+        imformat = 'png';
+        disp('png as default');
     end
     
     while cs ~= 1 && cs ~= 2
@@ -540,7 +540,7 @@ for iteration = 1:it
                 %images = histMatch(images,optim);
                 % Use custom reference histogram
                 disp('Using custom reference histogram from \"avghist_isoscene.mat\"')
-                load("avghist_isoscene_mancorr.mat", "avghist")
+                load("avghist_isoscene.mat", "avghist")
                 images = histMatch(images,optim,avghist);
             else
                 images = histMatch(images,optim,[],mask_fgr);
