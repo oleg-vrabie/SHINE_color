@@ -9,3 +9,6 @@ paper/DalBen_shine_color_preprint.md
 
 # .mat files
 *.mat
+
+# plots
+plots/
