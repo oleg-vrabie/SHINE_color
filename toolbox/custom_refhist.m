@@ -1,5 +1,6 @@
 %% Load reference images
-[channel1, channel2, channel3, images, nim, imname] = readImages(['SHINE_color_INPUT' filesep 'iso-scene' filesep], 'png', 2);
+folder = 'to_histmatch/action-in-context'; %'iso-scene'
+[channel1, channel2, channel3, images, nim, imname] = readImages(['SHINE_color_INPUT' filesep folder filesep], 'png', 2);
 
 %% Compute REFERENCE: mean histogram
 mask = ones(size(images{1}));
@@ -9,7 +10,9 @@ avghist = avgHist(images, mask);
 figure;bar(avghist(1:256));
 
 %% Save ref hist
-save("avghist_isoscene.mat", "avghist")
+name = split(folder, '/');
+fname = sprintf('avghist_%s.mat', name{2}); % "avghist_isoscene_man-cor.mat"
+save(fname, "avghist")
 
 %% Load
-load("avghist_isoscene.mat", "avghist")
+load(fname, "avghist")
