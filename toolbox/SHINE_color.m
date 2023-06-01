@@ -537,11 +537,14 @@ for iteration = 1:it
             disp('Progress: lumMatch successful')
         case {2, 5, 6}
             if wholeIm == 1
-                %images = histMatch(images,optim);
-                % Use custom reference histogram
-                disp('Using custom reference histogram from \"avghist_isoscene.mat\"')
-                load("avghist_isoscene.mat", "avghist")
-                images = histMatch(images,optim,avghist);
+                images = histMatch(images,optim);
+                
+%                 % Use custom reference histogram
+%                 fname_avghist = "avghist_action-in-context.mat"; % "avghist_isoscene_man-cor.mat"
+%                 fprintf('Using custom reference histogram from: %s\n', fname_avghist)
+%                 %load("avghist_isoscene_man-cor.mat", "avghist")
+%                 load(fname_avghist, "avghist")
+%                 images = histMatch(images,optim,avghist);
             else
                 images = histMatch(images,optim,[],mask_fgr);
                 images = histMatch(images,optim,[],mask_bgr);
